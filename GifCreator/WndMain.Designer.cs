@@ -38,6 +38,7 @@
             this.TimerPreview = new System.Windows.Forms.Timer(this.components);
             this.BtnClear = new System.Windows.Forms.Button();
             this.CheckSortDate = new System.Windows.Forms.CheckBox();
+            this.BtnSave = new System.Windows.Forms.Button();
             this.GroupPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PicturePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TrackDelay)).BeginInit();
@@ -53,9 +54,9 @@
             this.ListImages.FullRowSelect = true;
             this.ListImages.GridLines = true;
             this.ListImages.HideSelection = false;
-            this.ListImages.Location = new System.Drawing.Point(28, 17);
+            this.ListImages.Location = new System.Drawing.Point(28, 34);
             this.ListImages.Name = "ListImages";
-            this.ListImages.Size = new System.Drawing.Size(320, 390);
+            this.ListImages.Size = new System.Drawing.Size(320, 373);
             this.ListImages.TabIndex = 0;
             this.ListImages.UseCompatibleStateImageBehavior = false;
             this.ListImages.View = System.Windows.Forms.View.Details;
@@ -122,7 +123,7 @@
             // BtnClear
             // 
             this.BtnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.BtnClear.Location = new System.Drawing.Point(131, 418);
+            this.BtnClear.Location = new System.Drawing.Point(251, 418);
             this.BtnClear.Name = "BtnClear";
             this.BtnClear.Size = new System.Drawing.Size(97, 42);
             this.BtnClear.TabIndex = 5;
@@ -134,18 +135,30 @@
             // 
             this.CheckSortDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.CheckSortDate.AutoSize = true;
-            this.CheckSortDate.Location = new System.Drawing.Point(235, 418);
+            this.CheckSortDate.Location = new System.Drawing.Point(28, 11);
             this.CheckSortDate.Name = "CheckSortDate";
             this.CheckSortDate.Size = new System.Drawing.Size(113, 17);
             this.CheckSortDate.TabIndex = 6;
             this.CheckSortDate.Text = "Autosort by Date";
             this.CheckSortDate.UseVisualStyleBackColor = true;
             // 
+            // BtnSave
+            // 
+            this.BtnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.BtnSave.Location = new System.Drawing.Point(139, 418);
+            this.BtnSave.Name = "BtnSave";
+            this.BtnSave.Size = new System.Drawing.Size(97, 42);
+            this.BtnSave.TabIndex = 7;
+            this.BtnSave.Text = "Save to File";
+            this.BtnSave.UseVisualStyleBackColor = true;
+            this.BtnSave.Click += new System.EventHandler(this.BtnSave_Click);
+            // 
             // WndMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(875, 472);
+            this.Controls.Add(this.BtnSave);
             this.Controls.Add(this.CheckSortDate);
             this.Controls.Add(this.BtnClear);
             this.Controls.Add(this.TrackDelay);
@@ -177,6 +190,7 @@
         private System.Windows.Forms.ColumnHeader ColUrl;
         private System.Windows.Forms.Button BtnClear;
         private System.Windows.Forms.CheckBox CheckSortDate;
+        private System.Windows.Forms.Button BtnSave;
     }
 }
 

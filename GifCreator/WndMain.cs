@@ -337,26 +337,32 @@ namespace GifCreator
             }
         }
 
-        private void BtnToClipboard_Click(object sender, EventArgs e)
+        private void Save(string filename)
         {
             // export to temporary file name
             if (ActiveGif.GifImages.Count > 0)
             {
                 UseWaitCursor = true;
-                var tmpFile = string.Concat(System.IO.Path.GetTempFileName(), ".gif");
 
                 try
                 {
-                    ActiveGif.Export(tmpFile, true);
-                    Clipboard.SetText(tmpFile);
+                    ActiveGif.Export(filename, true);
                 }
                 catch
                 {
                     MessageBox.Show(this, "An unknown error occurred while trying to export the gif file.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                
+
                 UseWaitCursor = false;
             }
+        }
+        
+
+        private void BtnToClipboard_Click(object sender, EventArgs e)
+        {
+            var tmpFile = string.Concat(System.IO.Path.GetTempFileName(), ".gif");
+            Save(tmpFile);
+            Clipboard.SetText(tmpFile);
         }
 
         private void BtnClear_Click(object sender, EventArgs e)
@@ -603,6 +609,20 @@ namespace GifCreator
             // test area
 
             Debug.WriteLine("WndMain_DoubleClick");
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            var sfd = new SaveFileDialog()
+            {
+                Title = "Save as GIF...",
+                Filter = "gif files (*.gif)|*.gif|All files (*.*)|*.*"
+            };
+
+            if(sfd.ShowDialog(this) == DialogResult.OK)
+            {
+                Save(sfd.FileName);
+            }
         }
     }
 
