@@ -40,6 +40,11 @@ namespace GifCreator
         //    return false;
         //}
 
+        public void Clear()
+        {
+            GifImages.Clear();
+        }
+
         public GifImage AddFrame(string name, Bitmap bmp)
         {
             var gifimg = new GifImage(name, bmp);

@@ -23,7 +23,7 @@ namespace GifCreator
         
         Gif ActiveGif;
 
-
+        object gifLock = new object();
 
         int PreviewFrameIndex;
 
@@ -32,9 +32,16 @@ namespace GifCreator
             InitializeComponent();
 
             ActiveGif = new Gif();
+            ListImages.ListViewItemSorter = new ListViewIndexComparer();
+            ListImages.InsertionMark.Color = Color.Green;
+
             ListImages.AllowDrop = true; 
             ListImages.DragDrop += ListImages_DragDrop;
             ListImages.DragEnter += ListImages_DragEnter;
+            ListImages.DragOver += ListImages_DragOver;
+            ListImages.ItemDrag += ListImages_ItemDrag;
+            ListImages.DragLeave += ListImages_DragLeave;
+
 
             TimerPreview.Start();
             
@@ -44,6 +51,7 @@ namespace GifCreator
             //ImageSystem.DownloadAsBitmap(@"http://flyers.arcade-museum.com/flyers_video/atari/11007601.jpg");
         }
 
+       
 
         Bitmap TryGetDib(DataObject dataObj)
         {
@@ -374,23 +382,111 @@ namespace GifCreator
         /** ListImages Events **/
 
 
+        private void ListImages_DragLeave(object sender, EventArgs e)
+        {
+            ListImages.InsertionMark.Index = -1;
+        }
+
+        private void ListImages_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            ListImages.DoDragDrop(e.Item, DragDropEffects.Move); ;
+        }
+
+
+        private void ListImages_DragOver(object sender, DragEventArgs e)
+        {
+            // Retrieve the client coordinates of the mouse pointer.
+            Point targetPoint =
+                ListImages.PointToClient(new Point(e.X, e.Y));
+
+            // Retrieve the index of the item closest to the mouse pointer.
+            int targetIndex = ListImages.InsertionMark.NearestIndex(targetPoint);
+
+            // Confirm that the mouse pointer is not over the dragged item.
+            if (targetIndex > -1)
+            {
+                // Determine whether the mouse pointer is to the left or
+                // the right of the midpoint of the closest item and set
+                // the InsertionMark.AppearsAfterItem property accordingly.
+                Rectangle itemBounds = ListImages.GetItemRect(targetIndex);
+                if (targetPoint.X > itemBounds.Left + (itemBounds.Width / 2))
+                {
+                    ListImages.InsertionMark.AppearsAfterItem = true;
+                }
+                else
+                {
+                    ListImages.InsertionMark.AppearsAfterItem = false;
+                }
+            }
+
+            // Set the location of the insertion mark. If the mouse is
+            // over the dragged item, the targetIndex value is -1 and
+            // the insertion mark disappears.
+            ListImages.InsertionMark.Index = targetIndex;
+        }
+
         void ListImages_DragDrop(object sender, DragEventArgs e)
         {
             Debug.WriteLine("ListImages_DragDrop");
 
             var dataObj = e.Data as DataObject;
 
-            AddImage(dataObj);
+            if (dataObj.GetDataPresent(typeof(ListViewItem)))
+            {
+                // trying to re-sort items
+                // Retrieve the index of the insertion mark;
+                int targetIndex = ListImages.InsertionMark.Index;
+
+                // If the insertion mark is not visible, exit the method.
+                if (targetIndex == -1)
+                {
+                    return;
+                }
+
+                // If the insertion mark is to the right of the item with
+                // the corresponding index, increment the target index.
+                if (ListImages.InsertionMark.AppearsAfterItem)
+                {
+                    targetIndex++;
+                }
+
+                // Retrieve the dragged item.
+                ListViewItem draggedItem =
+                    (ListViewItem)e.Data.GetData(typeof(ListViewItem));
+
+                // Insert a copy of the dragged item at the target index.
+                // A copy must be inserted before the original item is removed
+                // to preserve item index values.
+                ListImages.Items.Insert(
+                    targetIndex, (ListViewItem)draggedItem.Clone());
+
+                // Remove the original copy of the dragged item.
+                ListImages.Items.Remove(draggedItem);
+
+                lock (gifLock)
+                {
+                    ActiveGif.Clear();
+                    ActiveGif.GifImages = ListImages.Items.Cast<ListViewItem>().Select(l => l.Tag as GifImage).ToList();
+                }
+
+                
+            }
+            else
+            {
+                AddImage(dataObj);
+            }
 
 
         }
 
         void ListImages_DragEnter(object sender, DragEventArgs e)
         {
+            e.Effect = e.AllowedEffect;
+
             //throw new NotImplementedException();
             Debug.WriteLine("ListImages_DragEnter");
 
-            e.Effect = DragDropEffects.Copy;
+            //e.Effect = DragDropEffects.Copy;
             return;
 
 
@@ -473,7 +569,13 @@ namespace GifCreator
         }
 
 
-
+        private class ListViewIndexComparer : System.Collections.IComparer
+        {
+            public int Compare(object x, object y)
+            {
+                return ((ListViewItem)x).Index - ((ListViewItem)y).Index;
+            }
+        }
 
 
         private void BtnTest_Click(object sender, EventArgs e)
@@ -496,8 +598,12 @@ namespace GifCreator
 
         }
 
+        private void WndMain_DoubleClick(object sender, EventArgs e)
+        {
+            // test area
 
-
+            Debug.WriteLine("WndMain_DoubleClick");
+        }
     }
 
 

@@ -156,6 +156,7 @@
             this.KeyPreview = true;
             this.Name = "WndMain";
             this.Text = "Gif Creator";
+            this.DoubleClick += new System.EventHandler(this.WndMain_DoubleClick);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.WndMain_KeyDown);
             this.GroupPreview.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.PicturePreview)).EndInit();
